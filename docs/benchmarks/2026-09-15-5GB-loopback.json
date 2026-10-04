@@ -1,0 +1,33 @@
+{
+  "bytes": 5000000000,
+  "files": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "network": "127.0.0.1 loopback; not Wi-Fi",
+  "dataset": "Materialized os.urandom bytes; no sparse files",
+  "chunk_bytes": 16777216,
+  "server_active_file_limit": 2,
+  "client_active_files": 1,
+  "generation_seconds": 43.768775500007905,
+  "source_manifest": {
+    "folder-0/سلام-00000.bin": {
+      "size": 5000000000,
+      "sha256": "f341639cbddf5ab7dc904c6847971024b761f7381f2b43fd9731e5f302d1e506"
+    }
+  },
+  "upload_including_verification_seconds": 203.22532480000518,
+  "download_including_disk_verification_seconds": 235.46554639999522,
+  "client_cpu_seconds": 71.421875,
+  "independent_destination_recheck_seconds": 8.071398300002329,
+  "server_verification_wait_seconds_including_poll_delay": 7.0963632999919355,
+  "status": "passed",
+  "upload_end_to_end_MB_per_second": 24.60323291361704,
+  "download_end_to_end_MB_per_second": 21.23452911240904,
+  "peak_client_RSS_MiB": 494.01171875,
+  "fixture_cleanup": "Only generated source, server and download fixtures removed after run; logs and checksums retained",
+  "launcher_only_RSS_MiB_invalid_as_server_measurement": 11.3046875,
+  "launcher_only_cpu_seconds_invalid_as_server_measurement": 0.015625,
+  "peak_server_RSS_MiB": null,
+  "server_cpu_seconds": null,
+  "measurement_notes": "Initial sampler measured the Windows venv launcher instead of its Python child. Server CPU/RSS fields are therefore unavailable for the full run. Client RSS was measured before the request-buffer retention fix. Timing, byte counts and hashes remain valid. Other local tests/builds ran concurrently."
+}

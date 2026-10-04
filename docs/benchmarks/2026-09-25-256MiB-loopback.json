@@ -1,0 +1,33 @@
+{
+  "bytes": 268435456,
+  "files": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "network": "127.0.0.1 loopback; not Wi-Fi",
+  "dataset": "Materialized os.urandom bytes; no sparse files",
+  "chunk_bytes": 16777216,
+  "server_active_file_limit": 2,
+  "client_active_files": 1,
+  "generation_seconds": 0.39862559999983205,
+  "source_manifest": {
+    "folder-0/Ø³Ù„Ø§Ù…-00000.bin": {
+      "size": 268435456,
+      "sha256": "7eeae2faae9e943ca47e9ef24c469a5ecba7ebea321a07e6319d35ef686e8b09"
+    }
+  },
+  "upload_including_verification_seconds": 3.004840300000069,
+  "download_including_disk_verification_seconds": 1.0876141999997344,
+  "client_cpu_seconds": 1.578125,
+  "independent_destination_recheck_seconds": 0.2131165000000692,
+  "sum_verification_observation_latency_seconds": 0.38994339999999283,
+  "server_cpu_seconds": 1.875,
+  "status": "passed",
+  "upload_end_to_end_MB_per_second": 89.33435031472183,
+  "download_end_to_end_MB_per_second": 246.8112828979849,
+  "peak_server_RSS_MiB": 72.05859375,
+  "peak_client_RSS_MiB": 99.26171875,
+  "measurement_notes": "Server RSS/CPU includes the Windows venv launcher and child process. Other local development work may run concurrently; no isolated disk/network baseline.",
+  "fixture_cleanup": "Only generated source, server and download fixtures removed after run; logs and checksums retained",
+  "verification_metric_note": "Sum of per-file time from completion request to observed completion; overlapping work may exceed total wall time.",
+  "client_upload_worker_limit": 2
+}

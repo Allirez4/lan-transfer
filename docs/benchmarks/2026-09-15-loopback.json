@@ -1,0 +1,23 @@
+{
+  "run_id": "d35e58db8cf16a3e1686c49f0324a967",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "dataset": "os.urandom materialized bytes; no sparse/zero-file throughput claim",
+  "bytes": 67108864,
+  "files": 1,
+  "chunk_bytes": 4194304,
+  "server_active_file_limit": 2,
+  "client_active_files": 1,
+  "generation_seconds": 2.869024099985836,
+  "upload_including_verification_seconds": 3.775783900025999,
+  "server_verification_wait_seconds_including_poll_delay": 0.5050686000031419,
+  "download_including_disk_verification_seconds": 3.4563845000229776,
+  "upload_end_to_end_MB_per_second": 17.773491750822366,
+  "download_end_to_end_MB_per_second": 19.41591394115842,
+  "client_cpu_seconds": 0.46875,
+  "network_only_Mbps": null,
+  "peak_server_RSS_MiB": null,
+  "peak_client_RSS_MiB": null,
+  "limitations": "RSS, disk-only and network-only baselines must be recorded separately; this CLI run uses one active file. Localhost is not Wi-Fi.",
+  "server_share_id": "4eef45b344cf1df6b80a38212af3d203"
+}

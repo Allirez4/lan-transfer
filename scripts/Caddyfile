@@ -1,0 +1,10 @@
+# Replace the IP with the laptop's reserved LAN IP, then configure the same
+# exact HTTPS origin and host in config.json. Do not expose this publicly.
+{
+    skip_install_trust
+}
+
+https://192.168.1.10 {
+    tls internal
+    reverse_proxy 127.0.0.1:8000
+}

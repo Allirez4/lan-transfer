@@ -1,0 +1,14 @@
+{
+  "files": 2,
+  "bytes_per_file": 268435456,
+  "client_active_files": 2,
+  "chunk_bytes": 16777216,
+  "dataset": "Two materialized random files, independent simultaneous CLI uploads",
+  "peak_server_tree_RSS_MiB": 71.61328125,
+  "peak_client_RSS_MiB": 109.1796875,
+  "network": "Loopback; other local tests may run concurrently",
+  "wall_seconds_including_verification": 14.259854699979769,
+  "server_cpu_seconds": 5.28125,
+  "status": "passed",
+  "server_under_256_MiB": true
+}

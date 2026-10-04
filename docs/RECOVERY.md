@@ -1,0 +1,32 @@
+# Storage, recovery and operations
+
+## Data layout
+
+`storage/state.sqlite3` holds identity, hashed sessions, pairing-code hashes, manifests, offsets and receipts. SQLite uses WAL with FULL synchronous transactions. `.staging/<opaque-id>.part` holds one incomplete file, on the same volume as `received/<job-id>/<relative-path>`. Published bytes are stored once. Metadata is never a file-content store.
+
+One process exclusively locks `server.lock`. Do not run multiple Uvicorn workers or place the database on a network filesystem. Uploads and streaming downloads have separate bounded pools (two each by default); configure one per direction for an HDD. A disconnected download cancels its reader; a stalled response send times out after the configured idle timeout. A fixed set of upload locks and bounded disk workers limits queue overhead. One verifier runs at a time. Lazy share hashing uses a separate one-worker pool, so hashing a large share cannot monopolize upload disk workers. Background database failures retry with bounded backoff without closing the service; health returns 503 while verification/maintenance is degraded. Startup reconciles job summaries as well as file offsets. Default chunk size is 16 MiB; supported sizes are 4/8/16/32 MiB and remain fixed per file.
+
+## Failure handling
+
+- A disconnected, canceled, truncated, oversized, or hash-mismatched chunk is truncated back to the previously committed offset. Flush/fsync finishes before offset+receipt commit and acknowledgement. Cleanup is shielded from cancellation.
+- A process kill can leave a suffix. Startup truncates that suffix. If data is shorter than the durable offset, the upload becomes `repair_required`; it is never advertised as resumable at nonexistent bytes.
+- A lost acknowledgement is resolved by replaying the same request ID and checksum or reconciling the server offset and receipt. No duplicate append occurs.
+- Full-file verification runs as a separate recorded state. A checksum mismatch cannot publish a share.
+- Before publishing, `finalizing` and the expected SHA-256 are durable. Publication uses Windows no-replace rename or POSIX hard-link/unlink on the same volume. On restart, an existing final destination must match size and SHA-256 before it is adopted. No unrelated destination is overwritten.
+- Pause/cancel waits for the current file lock. A chunk or verification already completing may finish before a control takes effect. A canceled job cannot become successful unless all entries had already completed.
+- Canceled and incomplete files remain on disk until explicitly discarded. After canceling a batch, **Discard incomplete data** removes only its unpublished staging files and records the choice. Completed downloads and original sources remain untouched. No automatic retention runs. Back up the entire storage directory with the server stopped before manual maintenance; keep SQLite, WAL and file data together.
+- Admission reserves remaining bytes across open uploads and a configurable safety margin. Another program can still fill the disk; free space and retry when a 507 error occurs. A failed rollback requires repair. Canceling releases the future-byte reservation but retains already written bytes.
+
+## Source and destination rules
+
+Destination paths are NFC-normalized, case-insensitive for collision checks, and confined below approved roots. Original source spellings remain available for reading existing files, including decomposed Unicode names. Traversal, absolute/UNC/drive names, NUL/control characters, Windows devices, alternate streams, trailing spaces/dots and symlinks/junctions are rejected. Long-path behavior still depends on Windows configuration and filesystem limits. Windows volume detection rejects FAT32 files of 4 GiB or more before writing them. Unknown filesystems retain the generic actionable storage error. NTFS is recommended.
+
+The server isolates batches by ID. Within a batch, conflicts wait for an explicit rename or skip. Stable source keys and directory mappings survive manifest replay and reload. Renaming a folder carries its descendants to that destination; skipped entries are counted explicitly. The expected manifest count prevents incomplete registration from silently losing files. The CLI prompts for conflicts or follows a saved `--on-conflict rename|skip` policy, including preexisting download destinations. No unrelated file is replaced. Normalized filenames, directory structure and bytes are preserved. Original ACLs, ownership, executable bits, hard-link relationships and destination modification times are not preserved.
+
+The desktop download uses `.lan-transfer-parts/<job-id>/<file-id>.part` under the chosen destination. It hashes its committed prefix and truncates uncommitted bytes before resuming. Each range is validated against the pinned version, exact Content-Range and length. A range streams the remaining file through bounded buffers, with fsync and SQLite checkpoints every 16 MiB. Live network retries truncate uncertain suffixes and reuse the known hash state; restarting the companion still rehashes the committed prefix. It verifies destination bytes with a full disk pass, records `finalizing`, publishes without replacement, and records completion. Completed files are checked locally on resume, without network retransmission.
+
+Keep locally shared files unchanged while transferring. Versions include device/inode, size, mtime and ctime; these are change validators, not hashes. Content streaming checks the version between bounded sends and aborts if it changes. A privileged external actor can still race filesystem checks; this is a trusted-owner local-filesystem application, not a sandbox against a malicious local administrator. Reliable clients additionally verify SHA-256. Refresh or register a new share to adopt a changed source. Refreshing changes the file IDs atomically. Unsharing stops new requests and is checked during active streams; it never deletes originals. Removed configured roots also block their existing command-line shares. Native picker shares have explicit local approval independent of the command-line roots.
+
+## Durability limits
+
+fsync and SQLite ordering protect normal interruption/restart boundaries. POSIX directories are fsynced where supported. Windows directory fsync is not available through this implementation, and power-loss behavior depends on filesystem, storage cache and hardware. This is not immunity to hardware failure. Keep independent backups of irreplaceable files.
